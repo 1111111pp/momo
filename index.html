@@ -1,0 +1,234 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>蘑菇按键4.1 网页版复刻</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+*{box-sizing:border-box;font-size:14px;}
+body{background:#121212;color:#eeeeee;padding:12px;max-width:920px;margin:0 auto;font-family:system-ui, sans-serif;}
+input[type="text"],input[type="number"],select{background:#1e1e1e;color:#fff;border:1px solid #444;padding:4px 6px;}
+.panel-block{border:1px solid #333;padding:10px;margin:8px 0;border-radius:4px;}
+.warn-text{color:#ff7777;}
+.info-text{color:#88ccff;font-size:12px;}
+button{padding:5px 10px;margin:2px;border:none;border-radius:3px;cursor:pointer;}
+.btn-green{background:#289b48;color:white;}
+.btn-red{background:#b82c2c;color:white;}
+.btn-blue{background:#2b68b8;color:white;}
+.btn-gray{background:#555555;color:white;}
+small{font-size:11px;color:#aaa;}
+</style>
+</head>
+<body>
+<h2 class="text-xl text-center text-green-400 my-2">🍄蘑菇按键4.1 网页版</h2>
+
+<div class="info-text mb-2">
+浏览器控制授权.bat：<span id="batStatus">未授权</span>｜
+开启屏幕共享：<span id="shareStatus">未共享</span>
+<button id="startShareBtn" class="btn-blue">开启屏幕共享</button>
+<button id="stopShareBtn" class="btn-gray">停止共享</button>
+</div>
+
+<div class="panel-block">
+<div>随机倍率：
+<label><input type="radio" name="randomR" value="0.7~1.3" checked>0.7~1.3</label>
+<label><input type="radio" name="randomR" value="0.9~1.1">0.9~1.1</label>
+<label><input type="radio" name="randomR" value="0.85~1.15">0.85~1.15</label>
+</div>
+<div class="mt-1">发呆模式：
+<select id="sleepMode">
+<option value="0">不发呆</option>
+<option value="3-5">1分钟随机发呆3~5秒</option>
+<option value="5-7">1分钟随机发呆5~7秒</option>
+</select>
+</div>
+</div>
+
+<div class="panel-block">
+<h4>主按键设置 1‑3</h4>
+<div class="grid grid-cols-3 gap-2 mt-2">
+<div>
+<div>按键1</div>
+<div>技能间隔(秒):<input type="number" value="2" class="w-16" id="k1_interval"></div>
+<div>按住(ms):<input type="number" value="100" class="w-16" id="k1_hold"></div>
+</div>
+<div>
+<div>按键2</div>
+<div>技能间隔(秒):<input type="number" value="2" class="w-16" id="k2_interval"></div>
+<div>按住(ms):<input type="number" value="100" class="w-16" id="k2_hold"></div>
+</div>
+<div>
+<div>按键3</div>
+<div>技能间隔(秒):<input type="number" value="2" class="w-16" id="k3_interval"></div>
+<div>按住(ms):<input type="number" value="100" class="w-16" id="k3_hold"></div>
+</div>
+</div>
+
+<div class="mt-3">
+<label><input type="checkbox" id="enableExtra">↓勾选运行，执行按键4‑9序列</label>
+每 <input type="number" value="3" class="w-12" id="extraMin"> 分钟顺序执行一轮
+<div class="mt-1">序列间隔(秒):<input type="number" value="1" class="w-16" id="extraInterval">
+按住(ms):<input type="number" value="100" class="w-16" id="extraHold"></div>
+<div class="flex flex-wrap gap-1 mt-1">
+按键4:<input class="w-10" value="">
+按键5:<input class="w-10" value="">
+按键6:<input class="w-10" value="">
+按键7:<input class="w-10" value="">
+按键8:<input class="w-10" value="">
+按键9:<input class="w-10" value="">
+</div>
+</div>
+</div>
+
+<div class="panel-block">
+<div>主程序启动：
+<button id="mainStart" class="btn-green">点击开始</button>
+状态:<span id="mainStatus">已停止</span>
+</div>
+<div class="mt-1">区域2独立：
+<button id="area2Start" class="btn-green">点击开始</button>
+状态:<span id="area2Status">已停止</span>
+BUFF1间隔(秒):<input type="number" value="5" class="w-14">
+BUFF2间隔(秒):<input type="number" value="5" class="w-14">
+</div>
+<div class="mt-1">宠物口粮：
+<select>
+<option>一只宠物</option>
+<option>两只宠物</option>
+<option>三只宠物</option>
+</select>
+<small>此区域先倒计时再按下按键</small>
+</div>
+</div>
+
+<div class="panel-block">
+<h4>框选小地图回原位</h4>
+检测ms:<input value="500" type="number" class="w-16">
+灵敏度：
+<label><input name="sense" type="radio" value="normal" checked>普通</label>
+<label><input name="sense" type="radio" value="fast">灵敏</label>
+<label><input name="sense" type="radio" value="slow">迟钝</label>
+<div class="mt-1">回位朝向：
+<label><input type="checkbox" id="faceLeft">左</label>
+<label><input type="checkbox" id="faceRight">右(风险高)</label>
+<button class="btn-gray">回原位跳跃键:点击设置</button>
+<button class="btn-green">框选小地图回原位(点击开始)</button>
+<span>状态:已停止</span>
+</div>
+</div>
+
+<div class="panel-block">
+<div>测谎仪报警：
+<button class="btn-blue">框选测谎仪请框选</button>
+<select>
+<option>关</option><option>开‑一直响</option>
+</select>
+</div>
+<div class="mt-1">掉线报警：
+<button class="btn-blue">框选掉线请框选</button>
+<select>
+<option>关</option><option>开‑一直响</option>
+</select>
+</div>
+<div class="mt-1">报警提示音：
+<select>
+<option>系统默认</option>
+<option>蜂鸣</option>
+<option>叮咚</option>
+</select>
+<button class="btn-gray">自定义试听</button>
+</div>
+</div>
+
+<div class="panel-block">
+<button class="btn-blue">保存设置</button>
+<button class="btn-gray">重置设置</button>
+<button id="stopAllBtn" class="btn-red">停止全部(点击停止)</button>
+<div class="warn-text mt-2">我不怕封号，我要按键123间隔更短</div>
+</div>
+
+<div class="panel-block">
+<h4>使用说明书</h4>
+<small>
+一、主按键1‑3：填写要释放的按键；技能间隔=多久按一次；按住毫秒控制按键按下时长。<br/>
+★插入操作：勾选运行，N分钟后顺序执行按键4‑9；可以填空白按键实现延时。<br/>
+回原位：先框选小地图；回位朝向左右只能选一个。<br/>
+测谎仪报警：框选测谎白色区域；掉线报警框选左上角“小地图”文字区域。<br/>
+⚠️网页版限制：浏览器JS<strong>无法直接向外部游戏发送按键</strong>，原版需要本地bat程序中转，否则仅本页面内模拟按键。
+</small>
+</div>
+
+<!-- 隐藏视频画布用于屏幕共享捕获 -->
+<video id="shareVideo" style="display:none;"></video>
+<canvas id="shareCanvas" style="display:none;"></canvas>
+
+<script>
+//状态变量
+let mediaStream=null;
+let mainRunning=false;
+let area2Running=false;
+
+const shareStatus=document.getElementById("shareStatus");
+const batStatus=document.getElementById("batStatus");
+const startShareBtn=document.getElementById("startShareBtn");
+const stopShareBtn=document.getElementById("stopShareBtn");
+const shareVideo=document.getElementById("shareVideo");
+
+const mainStart=document.getElementById("mainStart");
+const mainStatus=document.getElementById("mainStatus");
+const area2Start=document.getElementById("area2Start");
+const area2Status=document.getElementById("area2Status");
+const stopAllBtn=document.getElementById("stopAllBtn");
+
+//模拟按键(仅网页内部生效，无法发给游戏客户端)
+function simKey(key,holdMs=100){
+    if(!key||key.trim()==="")return;
+    const kd=new KeyboardEvent("keydown",{key:key.trim(),bubbles:true});
+    document.dispatchEvent(kd);
+    setTimeout(()=>{
+        const ku=new KeyboardEvent("keyup",{key:key.trim(),bubbles:true});
+        document.dispatchEvent(ku);
+    },holdMs);
+}
+
+//开启屏幕共享
+startShareBtn.onclick=async()=>{
+    try{
+        mediaStream=await navigator.mediaDevices.getDisplayMedia({video:true});
+        shareVideo.srcObject=mediaStream;
+        await shareVideo.play();
+        shareStatus.textContent="✅已共享";
+    }catch(e){
+        shareStatus.textContent="❌共享失败";
+        console.error(e);
+    }
+};
+stopShareBtn.onclick=()=>{
+    if(mediaStream) mediaStream.getTracks().forEach(t=>t.stop());
+    shareVideo.srcObject=null;
+    shareStatus.textContent="未共享";
+};
+
+//主开关模拟
+mainStart.onclick=()=>{
+    mainRunning=!mainRunning;
+    mainStatus.textContent=mainRunning?"🟢运行中":"已停止";
+    mainStart.textContent=mainRunning?"点击停止":"点击开始";
+};
+area2Start.onclick=()=>{
+    area2Running=!area2Running;
+    area2Status.textContent=area2Running?"🟢运行中":"已停止";
+    area2Start.textContent=area2Running?"点击停止":"点击开始";
+};
+stopAllBtn.onclick=()=>{
+    mainRunning=false; area2Running=false;
+    mainStatus.textContent="已停止"; mainStart.textContent="点击开始";
+    area2Status.textContent="已停止"; area2Start.textContent="点击开始";
+    if(mediaStream) mediaStream.getTracks().forEach(t=>t.stop());
+    shareStatus.textContent="未共享";
+};
+
+</script>
+</body>
+</html>
